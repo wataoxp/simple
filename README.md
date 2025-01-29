@@ -1,31 +1,38 @@
-# S93C46
+# Simple
 
 ## 概要
-セイコー製のEEPROM、S93C46ADP用のプログラムです。
+STM32のLLライブラリを用いたベアメタル(っぽい)プログラムです。
 
-SPIに似たMicroWire形式での通信です。
+LLライブラリの各種プリプロセッサや関数を用いているのでmain.hでincludeしている各種ヘッダファイルが必要です。
 
-このプログラムでは単純にGPIOで通信を行っています。
+レジスタ直打ちにすれば不要になります(後で忘れそうなのであえてLLを使っています)
 
 ## 説明
-GPIOの設定はgpio.cのGPIO_Initで行っています。
-
-GPIOの設定を行った後、8ページ分データを書き込み、書き込んだデータを読み取るだけのプログラムです。
+* I2Cを使ったLCDの表示
+* Lチカ
+* GPIO割り込みで手動Lチカ
 
 ## Requirement
 * STM32CubeIDE
-* STM32C011F4P6(Cortex-M0+)
+* STM32G031F6P6
 * Clang
 
 ## Description
 Edited File
 * main.c
-* s93c46.c
-* s93c46.h
+* main.h
+* rcc.c
+* rcc.h
 * delay.c
 * delay.h
 * gpio.c
 * gpio.h
+* i2c.c
+* i2c.h
+* lcd.c
+* lcd.h
+* exti.c
+* exti.h
 
 ## Licence
 [MIT](https://github.com/wataoxp/Radio/blob/main/LICENSE)
