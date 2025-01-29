@@ -10,6 +10,9 @@
 
 #include "main.h"
 
+#define GPIO_BASE  (0x00000400UL)
+#define GPIO_PORT(x) ((GPIO_TypeDef *)(IOPORT_BASE + GPIO_BASE * x))
+
 typedef enum{
 	Pin0,
 	Pin1,
