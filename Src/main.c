@@ -3,12 +3,14 @@
 
 #include <string.h>
 
-static I2C_TypeDef *I2Cx;
-
 static void RCC_Set(void);
 static void GPIO_Set(GPIO_Port);
 static void EXTI_Set(GPIO_Port);
+
+#ifdef I2C_ENABLE
 static void I2C_Set(void);
+static I2C_TypeDef *I2Cx;
+#endif
 
 void EXTI4_15_IRQHandler(void)
 {
@@ -62,7 +64,7 @@ static void RCC_Set(void)
 }
 static void GPIO_Set(GPIO_Port port)
 {
-	GPIO_TypeDef *GPIOx;
+	GPIO_TypeDef *GPIOx = GPIO_PORT(port);
 	GPIO_InitTypedef init;
 	init.PinPos = Pin0;
 	init.Pull = LL_GPIO_PULL_NO;
@@ -71,26 +73,13 @@ static void GPIO_Set(GPIO_Port port)
 	init.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
 
 	LL_IOP_GRP1_EnableClock(1 << port);
-	switch(port)
-	{
-	case PORTA:
-		GPIOx = GPIOA;
-		break;
-	case PORTB:
-		GPIOx = GPIOB;
-		break;
-	case PORTC:
-		GPIOx = GPIOC;
-		break;
-	default:
-		break;
-	}
 	GPIO_Init(GPIOx, &init);
 	init.PinPos = Pin1;
 	GPIO_Init(GPIOx, &init);
 }
 static void EXTI_Set(GPIO_Port port)
 {
+	GPIO_TypeDef *GPIOx = GPIO_PORT(port);
 	LL_EXTI_InitTypeDef init;
 	init.Line_0_31 = LL_EXTI_LINE_6;
 	init.Mode = LL_EXTI_MODE_IT;
@@ -102,12 +91,12 @@ static void EXTI_Set(GPIO_Port port)
 	__NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 	EXTI_SetSource(port, Pin6);
-	//LL_EXTI_SetEXTISource(port, LL_EXTI_CONFIG_LINE6);
 	EXTI_Init(&init);
 
-	GPIO_SetPinPull(GPIOB, Pin6, LL_GPIO_PULL_UP);
-	GPIO_SetPinMode(GPIOB, Pin6, LL_GPIO_MODE_INPUT);
+	GPIO_SetPinPull(GPIOx, Pin6, LL_GPIO_PULL_UP);
+	GPIO_SetPinMode(GPIOx, Pin6, LL_GPIO_MODE_INPUT);
 }
+#ifdef I2C_ENABLE
 static void I2C_Set(void)
 {
 	GPIO_InitTypedef init[2] = {
@@ -141,3 +130,4 @@ static void I2C_Set(void)
 	LL_I2C_EnableAutoEndMode(I2Cx);
 	LL_I2C_EnableClockStretching(I2Cx);
 }
+#endif
